@@ -13,11 +13,12 @@ public class Test : MonoBehaviour
     {
         
     }
-    private void OnTriggerEnter(Collider other)
+    public void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("HitBox"))
+        if (other.gameObject.CompareTag("Drop"))
         {
             Destroy(gameObject);
         }
     }
+
 }

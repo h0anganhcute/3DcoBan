@@ -6,7 +6,7 @@ public class Player : MonoBehaviour
     [SerializeField] GameObject Bullet;   // Kéo prefab Bullet vào đây
     [SerializeField] float bulletSpeed = 10f;
     [SerializeField] GameObject Checkpoint;
-
+    [SerializeField] GameObject Drop;
     private float shootDelay = 1f;      // delay 1 giây
     private float nextShootTime = 0f;   // thời điểm được bắn tiếp
     [SerializeField] GameObject kick;
@@ -24,6 +24,7 @@ public class Player : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
             StartCoroutine(Attackk());
+
         if (Input.GetMouseButtonDown(1))
             StartCoroutine(Kickk());
 
@@ -38,8 +39,10 @@ public class Player : MonoBehaviour
     public System.Collections.IEnumerator Dropping()
     {
         ani.SetBool("Drop", true);
+        Drop.SetActive(true);
         yield return new WaitForSeconds(0.3f);
         ani.SetBool("Drop", false);
+        Drop.SetActive(false);
     }
 
     public System.Collections.IEnumerator Attackk()

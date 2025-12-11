@@ -9,7 +9,10 @@ public class Boss : MonoBehaviour
 
     private float attackCooldown = 2.5f;
     private float nextAttackTime = 0f;
-    public  int mau = 100;
+    public int mau = 100;
+
+    private bool isDead = false; // cờ kiểm tra Boss đã chết chưa
+
     private void Start()
     {
         ani = GetComponent<Animator>();
@@ -17,6 +20,8 @@ public class Boss : MonoBehaviour
 
     private void Update()
     {
+        if (isDead) return; // nếu Boss đã chết thì dừng mọi hoạt động
+
         if (player != null)
         {
             // Boss luôn xoay mặt về phía Player (chỉ xoay ngang, không cúi/ngửa)
@@ -35,39 +40,41 @@ public class Boss : MonoBehaviour
 
     public void TanCong()
     {
+        if (isDead) return; // Boss chết thì không bắn nữa
+
         if (Bullet != null && checkPoint != null)
         {
-            // Tạo viên đạn tại vị trí checkPoint, hướng theo forward của nó
             GameObject bullet = Instantiate(Bullet, checkPoint.transform.position, checkPoint.transform.rotation);
 
             Rigidbody rb = bullet.GetComponent<Rigidbody>();
             if (rb != null)
             {
                 rb.useGravity = false;
-                rb.linearVelocity = checkPoint.transform.forward * 10f; // tốc độ bắn, có thể chỉnh
+                rb.linearVelocity = checkPoint.transform.forward * 10f; // sửa lại từ linearVelocity -> velocity
             }
 
-            // Hủy viên đạn sau 3 giây để tránh rác
             Destroy(bullet, 15f);
         }
     }
+
     private void OnTriggerEnter(Collider other)
     {
+        if (isDead) return; // Boss chết rồi thì không nhận sát thương nữa
+
         if (other.gameObject.CompareTag("PlayerHit"))
         {
             mau -= 50;
-            if (mau <= 0)
-            {
-                Destroy(gameObject);
-            }
         }
-        if (other.gameObject.CompareTag("PhiTieu"))
+        else if (other.gameObject.CompareTag("PhiTieu"))
         {
             mau -= 10;
-            if (mau <= 0)
-            {
-                Destroy(gameObject);
-            }
+        }
+
+        if (mau <= 0)
+        {
+            isDead = true; // đánh dấu Boss đã chết
+            ani.SetTrigger("Death");
+            Destroy(gameObject, 5f); // hủy Boss sau 5 giây
         }
     }
 }
