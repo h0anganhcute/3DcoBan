@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
 
     private float shootDelay = 1f;      // delay 1 giây
     private float nextShootTime = 0f;   // thời điểm được bắn tiếp
+    [SerializeField] GameObject kick;
 
     void Start()
     {
@@ -23,6 +24,8 @@ public class Player : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
             StartCoroutine(Attackk());
+        if (Input.GetMouseButtonDown(1))
+            StartCoroutine(Kickk());
 
         // Bắn đạn khi click chuột trái và đủ cooldown
         if (Input.GetMouseButtonDown(0) && Time.time >= nextShootTime)
@@ -44,6 +47,14 @@ public class Player : MonoBehaviour
         ani.SetBool("Attack", true);
         yield return new WaitForSeconds(0.8f);
         ani.SetBool("Attack", false);
+    }
+    public System.Collections.IEnumerator Kickk()
+    {
+        ani.SetBool("Kick", true);
+        kick.SetActive(true);
+        yield return new WaitForSeconds(0.8f);
+        ani.SetBool("Kick", false);
+        kick.SetActive(false);
     }
 
     void Shoot()
