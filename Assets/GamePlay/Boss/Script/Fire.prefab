@@ -19357,7 +19357,7 @@ GameObject:
   - component: {fileID: 3120508019021082726}
   m_Layer: 0
   m_Name: Fire
-  m_TagString: Untagged
+  m_TagString: DameBoss
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

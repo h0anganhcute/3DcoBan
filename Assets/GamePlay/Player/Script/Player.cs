@@ -1,24 +1,34 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 public class Player : MonoBehaviour
 {
     public Animator ani;
-    [SerializeField] GameObject Bullet;   // Kéo prefab Bullet vào đây
+    [SerializeField] GameObject Bullet;
     [SerializeField] float bulletSpeed = 10f;
     [SerializeField] GameObject Checkpoint;
     [SerializeField] GameObject Drop;
-    private float shootDelay = 1f;      // delay 1 giây
-    private float nextShootTime = 0f;   // thời điểm được bắn tiếp
     [SerializeField] GameObject kick;
+    AudioSource audi;
+
+    private float shootDelay = 1f;
+    private float nextShootTime = 0f;
+    [SerializeField] private int mau = 10;
+    private bool isDead = false;
+
+    [SerializeField] Transform startPosition; // vị trí ban đầu
+    [SerializeField] MonoBehaviour extraScript; // script khác để tắt khi chết
 
     void Start()
     {
         ani = GetComponent<Animator>();
+        audi = GetComponent<AudioSource>();
     }
 
     void Update()
     {
-        // Gọi Dropping và Attackk bằng phím, không cần StartCoroutine mỗi frame
+        if (isDead) return; // nếu đã chết thì dừng mọi hoạt động
+
         if (Input.GetKeyDown(KeyCode.F))
             StartCoroutine(Dropping());
 
@@ -28,15 +38,14 @@ public class Player : MonoBehaviour
         if (Input.GetMouseButtonDown(1))
             StartCoroutine(Kickk());
 
-        // Bắn đạn khi click chuột trái và đủ cooldown
         if (Input.GetMouseButtonDown(0) && Time.time >= nextShootTime)
         {
             Shoot();
-            nextShootTime = Time.time + shootDelay; // cập nhật thời điểm bắn tiếp theo
+            nextShootTime = Time.time + shootDelay;
         }
     }
 
-    public System.Collections.IEnumerator Dropping()
+    IEnumerator Dropping()
     {
         ani.SetBool("Drop", true);
         Drop.SetActive(true);
@@ -45,16 +54,19 @@ public class Player : MonoBehaviour
         Drop.SetActive(false);
     }
 
-    public System.Collections.IEnumerator Attackk()
+    IEnumerator Attackk()
     {
         ani.SetBool("Attack", true);
+        audi.Play();
         yield return new WaitForSeconds(0.8f);
         ani.SetBool("Attack", false);
     }
-    public System.Collections.IEnumerator Kickk()
+
+    IEnumerator Kickk()
     {
         ani.SetBool("Kick", true);
         kick.SetActive(true);
+        audi.Play();
         yield return new WaitForSeconds(0.8f);
         ani.SetBool("Kick", false);
         kick.SetActive(false);
@@ -67,7 +79,37 @@ public class Player : MonoBehaviour
         if (rb != null)
         {
             rb.useGravity = false;
-            rb.linearVelocity = Checkpoint.transform.forward * bulletSpeed; // đúng là velocity
+            rb.linearVelocity = Checkpoint.transform.forward * bulletSpeed; // sửa lại velocity
         }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (isDead) return;
+
+        if (collision.gameObject.CompareTag("DameBoss"))
+        {
+            mau -= 1;
+            if (mau <= 0)
+            {
+                isDead = true;
+                ani.SetTrigger("Death"); // gọi animation chết nếu có
+
+                // Tắt script khác nếu có
+                if (extraScript != null)
+                    extraScript.enabled = false;
+                StartCoroutine(Respawn());
+            }
+        }
+    }
+
+    IEnumerator Respawn()
+    {
+        yield return new WaitForSeconds(2f);
+        mau = 10;
+        isDead = false;
+        transform.position = startPosition.position;
+        if (extraScript != null)
+            extraScript.enabled = true;
     }
 }
