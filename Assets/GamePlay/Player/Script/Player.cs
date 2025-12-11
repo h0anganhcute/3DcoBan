@@ -17,7 +17,7 @@ public class Player : MonoBehaviour
         StartCoroutine(Dropping());
         StartCoroutine(Attackk());
 
-        // Bắn đạn khi click chuột trái
+        //Bắn đạn khi click chuột trái
         if (Input.GetMouseButtonDown(0))
         {
             Shoot();
@@ -39,7 +39,7 @@ public class Player : MonoBehaviour
         if (Input.GetMouseButtonDown(0)) // 0 = chuột trái
         {
             ani.SetBool("Attack", true);
-            yield return new WaitForSeconds(1.5f);
+            yield return new WaitForSeconds(0.8f);
             ani.SetBool("Attack", false);
         }
     }
