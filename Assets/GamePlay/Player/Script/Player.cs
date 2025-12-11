@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Player : MonoBehaviour
 {
@@ -7,6 +6,10 @@ public class Player : MonoBehaviour
     [SerializeField] GameObject Bullet;   // Kéo prefab Bullet vào đây
     [SerializeField] float bulletSpeed = 10f;
     [SerializeField] GameObject Checkpoint;
+
+    private float shootDelay = 1f;      // delay 1 giây
+    private float nextShootTime = 0f;   // thời điểm được bắn tiếp
+
     void Start()
     {
         ani = GetComponent<Animator>();
@@ -14,45 +17,43 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        StartCoroutine(Dropping());
-        StartCoroutine(Attackk());
+        // Gọi Dropping và Attackk bằng phím, không cần StartCoroutine mỗi frame
+        if (Input.GetKeyDown(KeyCode.F))
+            StartCoroutine(Dropping());
 
-        //Bắn đạn khi click chuột trái
         if (Input.GetMouseButtonDown(0))
+            StartCoroutine(Attackk());
+
+        // Bắn đạn khi click chuột trái và đủ cooldown
+        if (Input.GetMouseButtonDown(0) && Time.time >= nextShootTime)
         {
             Shoot();
+            nextShootTime = Time.time + shootDelay; // cập nhật thời điểm bắn tiếp theo
         }
     }
 
-    public IEnumerator Dropping()
+    public System.Collections.IEnumerator Dropping()
     {
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            ani.SetBool("Drop", true);
-            yield return new WaitForSeconds(0.3f);
-            ani.SetBool("Drop", false);
-        }
+        ani.SetBool("Drop", true);
+        yield return new WaitForSeconds(0.3f);
+        ani.SetBool("Drop", false);
     }
 
-    public IEnumerator Attackk()
+    public System.Collections.IEnumerator Attackk()
     {
-        if (Input.GetMouseButtonDown(0)) // 0 = chuột trái
-        {
-            ani.SetBool("Attack", true);
-            yield return new WaitForSeconds(0.8f);
-            ani.SetBool("Attack", false);
-        }
+        ani.SetBool("Attack", true);
+        yield return new WaitForSeconds(0.8f);
+        ani.SetBool("Attack", false);
     }
 
     void Shoot()
     {
-        // Tạo viên đạn tại vị trí Checkpoint, hướng theo forward của nó
         GameObject bullet = Instantiate(Bullet, Checkpoint.transform.position, Quaternion.identity);
         Rigidbody rb = bullet.GetComponent<Rigidbody>();
         if (rb != null)
         {
-            rb.useGravity = false; // nếu không muốn đạn bị rơi
-            rb.linearVelocity = Checkpoint.transform.forward * bulletSpeed;
+            rb.useGravity = false;
+            rb.linearVelocity = Checkpoint.transform.forward * bulletSpeed; // đúng là velocity
         }
     }
 }
