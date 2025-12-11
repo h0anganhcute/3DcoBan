@@ -5,7 +5,7 @@ public class Player : MonoBehaviour
 {
     public Animator ani;
 
-    public bool stop = false;
+
     void Start()
     {
 
@@ -26,12 +26,11 @@ public class Player : MonoBehaviour
 
     public IEnumerator Dropping()
     {
-        if (Input.GetKeyDown(KeyCode.F) && !stop)
+        if (Input.GetKeyDown(KeyCode.F))
         {
-            ani.SetTrigger("Drop");
-            stop = true;
+            ani.SetBool("Drop",true);
             yield return new WaitForSeconds(0.3f);
-            stop = false;
+            ani.SetBool("Drop", false);
         }
     }
 
