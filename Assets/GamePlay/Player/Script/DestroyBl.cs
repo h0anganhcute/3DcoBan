@@ -12,5 +12,6 @@ public class DestroyBl : MonoBehaviour
     void Update()
     {
         Destroy(gameObject, 1.5f);
+        transform.Rotate(90f, 0f, 0f);
     }
 }

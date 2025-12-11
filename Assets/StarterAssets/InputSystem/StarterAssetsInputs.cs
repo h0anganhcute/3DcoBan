@@ -21,33 +21,15 @@ namespace StarterAssets
         public bool cursorLocked = true;
         public bool cursorInputForLook = true;
 
-        private static bool isGameActive = false; // Game only active after login
-        private Login cachedLoginScript; // Cache Login reference
-
-        void Start()
-        {
-            // Start with cursor unlocked for login
-            if (!isGameActive)
-            {
-                UnlockCursor();
-            }
-
-            // Cache Login script reference
-            cachedLoginScript = Object.FindObjectOfType<Login>();
-        }
-
 #if ENABLE_INPUT_SYSTEM
         public void OnMove(InputValue value)
         {
-            if (isGameActive)
-            {
-                MoveInput(value.Get<Vector2>());
-            }
+            MoveInput(value.Get<Vector2>());
         }
 
         public void OnLook(InputValue value)
         {
-            if (cursorInputForLook && isGameActive)
+            if (cursorInputForLook)
             {
                 LookInput(value.Get<Vector2>());
             }
@@ -55,46 +37,17 @@ namespace StarterAssets
 
         public void OnJump(InputValue value)
         {
-            if (isGameActive)
-            {
-                JumpInput(value.isPressed);
-            }
+            JumpInput(value.isPressed);
         }
 
         public void OnSprint(InputValue value)
         {
-            if (isGameActive)
-            {
-                SprintInput(value.isPressed);
-            }
+            SprintInput(value.isPressed);
         }
 
         public void OnSteal(InputValue value)
         {
-            if (isGameActive)
-            {
-                StealInput(value.isPressed);
-            }
-        }
-
-        public void OnMenu(InputValue value)
-        {
-            // Only trigger on key press (not release) and when game is active
-            if (value.isPressed && isGameActive)
-            {
-                // Use cached reference or find if not cached
-                Login loginScript = cachedLoginScript;
-                if (loginScript == null)
-                {
-                    loginScript = Object.FindObjectOfType<Login>();
-                    cachedLoginScript = loginScript;
-                }
-
-                if (loginScript != null)
-                {
-                    loginScript.ShowPauseMenu(); // Show pause menu instead of logout
-                }
-            }
+            StealInput(value.isPressed);
         }
 #endif
 
@@ -126,50 +79,14 @@ namespace StarterAssets
 
         private void OnApplicationFocus(bool hasFocus)
         {
-            if (isGameActive)
-            {
-                SetCursorState(cursorLocked);
-            }
+            SetCursorState(cursorLocked);
         }
 
         private void SetCursorState(bool newState)
         {
             Cursor.lockState = newState ? CursorLockMode.Locked : CursorLockMode.None;
-            Cursor.visible = !newState;
-        }
-
-        // Public methods to control cursor and game state
-        public static void UnlockCursor()
-        {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-            isGameActive = false;
-        }
-
-        public static void LockCursor()
-        {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-            isGameActive = true;
-        }
-
-        public static void SetGameActive(bool active)
-        {
-            isGameActive = active;
-            if (active)
-            {
-                LockCursor();
-            }
-            else
-            {
-                UnlockCursor();
-            }
-        }
-
-        public static bool IsGameActive()
-        {
-            return isGameActive;
         }
     }
 
 }
+
