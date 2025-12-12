@@ -18,6 +18,9 @@ public class Player : MonoBehaviour
 
     [SerializeField] Transform startPosition; // vị trí ban đầu
     [SerializeField] MonoBehaviour extraScript; // script khác để tắt khi chết
+    [SerializeField] GameObject Ruong;
+
+    [SerializeField] GameObject panel; // Panel UI sẽ hiện khi rương bị phá
 
     void Start()
     {
@@ -42,6 +45,12 @@ public class Player : MonoBehaviour
         {
             Shoot();
             nextShootTime = Time.time + shootDelay;
+        }
+
+        // Kiểm tra nếu rương đã bị phá hủy
+        if (Ruong == null && panel != null && !panel.activeSelf)
+        {
+            panel.SetActive(true);
         }
     }
 
@@ -89,6 +98,7 @@ public class Player : MonoBehaviour
 
         if (collision.gameObject.CompareTag("DameBoss"))
         {
+            ani.SetTrigger("NhanSt");
             mau -= 1;
             if (mau <= 0)
             {
