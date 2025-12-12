@@ -19,6 +19,9 @@ public class Test : MonoBehaviour
         {
             Destroy(gameObject);
         }
-    }
 
+    }
+    
 }
+
+
