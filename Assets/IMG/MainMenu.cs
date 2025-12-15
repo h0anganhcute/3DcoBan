@@ -1,10 +1,24 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Audio;
+using Unity.AppUI.Redux;
+using UnityEngine.UI;
+
 
 public class MainMenu : MonoBehaviour
 {
     public GameObject pausePanel;
     private bool isPaused = false;
+
+    public AudioMixer audioMixer;
+    public Slider volumeSlider;
+    //float volume = 20f;
+
+    private void Start()
+    {
+        loadVolume();
+    }
+
 
     void Update()
     {
@@ -16,7 +30,6 @@ public class MainMenu : MonoBehaviour
                 Pause();
         }
     }
-
     public void Pause()
     {
         pausePanel.SetActive(true);
@@ -25,7 +38,6 @@ public class MainMenu : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
-
     public void Resume()
     {
         pausePanel.SetActive(false);
@@ -34,20 +46,16 @@ public class MainMenu : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
-
     public void Restart()
     {
         Time.timeScale = 1f;
         SceneManager.LoadScene("duyScenes");
     }
-
     public void LoadMainMenu()
     {
         Time.timeScale = 1f;
         SceneManager.LoadScene("MainMenu"); // nhớ add scene vào Build Settings
     }
-
-  
     public void StartGame()
     {
         SceneManager.LoadScene("duyScenes");
@@ -56,5 +64,19 @@ public class MainMenu : MonoBehaviour
     {
         Application.Quit();
         Debug.Log("Quit Game");
+    }
+    public void UpdateVolume(float volume)
+    {
+        audioMixer.SetFloat("Volume", volume);
+    }
+
+    public void SaveVolumeSetting()
+    {
+        audioMixer.GetFloat("Volume", out float volume);
+        PlayerPrefs.SetFloat("Volume", volume);
+    }
+    public void loadVolume()
+    {
+        volumeSlider.value = PlayerPrefs.GetFloat("Volume");
     }
 }
