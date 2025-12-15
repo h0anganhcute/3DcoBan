@@ -10,14 +10,13 @@ public class Player : MonoBehaviour
     [SerializeField] GameObject Drop;
     [SerializeField] GameObject kick;
     AudioSource audi;
-
     private float shootDelay = 1f;
     private float nextShootTime = 0f;
     [SerializeField] private int mau = 10;
     private bool isDead = false;
 
     [SerializeField] Transform startPosition; // vị trí ban đầu
-    [SerializeField] MonoBehaviour extraScript; // script khác để tắt khi chết
+    [SerializeField] MonoBehaviour PlayerScript; // script khác để tắt khi chết
     [SerializeField] GameObject Ruong;
 
     [SerializeField] GameObject panel; // Panel UI sẽ hiện khi rương bị phá
@@ -56,29 +55,39 @@ public class Player : MonoBehaviour
 
     IEnumerator Dropping()
     {
+        PlayerScript.enabled = false;
         ani.SetBool("Drop", true);
         Drop.SetActive(true);
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.8f);
+        
         ani.SetBool("Drop", false);
         Drop.SetActive(false);
+        PlayerScript.enabled = true;
     }
 
     IEnumerator Attackk()
     {
+        PlayerScript.enabled = false;
         ani.SetBool("Attack", true);
         audi.Play();
-        yield return new WaitForSeconds(0.8f);
+        yield return new WaitForSeconds(1f);
+        
         ani.SetBool("Attack", false);
+        PlayerScript.enabled = true;
+
     }
 
     IEnumerator Kickk()
     {
+        PlayerScript.enabled = false;
         ani.SetBool("Kick", true);
         kick.SetActive(true);
         audi.Play();
-        yield return new WaitForSeconds(0.8f);
+        yield return new WaitForSeconds(1.6f);
+        
         ani.SetBool("Kick", false);
         kick.SetActive(false);
+        PlayerScript.enabled = true;
     }
 
     void Shoot()
@@ -88,7 +97,7 @@ public class Player : MonoBehaviour
         if (rb != null)
         {
             rb.useGravity = false;
-            rb.linearVelocity = Checkpoint.transform.forward * bulletSpeed; // sửa lại velocity
+            rb.linearVelocity = Checkpoint.transform.forward * bulletSpeed; 
         }
     }
 
@@ -106,8 +115,8 @@ public class Player : MonoBehaviour
                 ani.SetTrigger("Death"); // gọi animation chết nếu có
 
                 // Tắt script khác nếu có
-                if (extraScript != null)
-                    extraScript.enabled = false;
+                if (PlayerScript != null)
+                    PlayerScript.enabled = false;
                 StartCoroutine(Respawn());
             }
         }
@@ -115,11 +124,11 @@ public class Player : MonoBehaviour
 
     IEnumerator Respawn()
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1.6f);
         mau = 10;
         isDead = false;
         transform.position = startPosition.position;
-        if (extraScript != null)
-            extraScript.enabled = true;
+        if (PlayerScript != null)
+            PlayerScript.enabled = true;
     }
 }
